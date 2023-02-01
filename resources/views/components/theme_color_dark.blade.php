@@ -1,0 +1,1 @@
+<meta name="theme-color" id="themecolor" content="#3c3c3c"/>
