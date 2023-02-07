@@ -172,7 +172,7 @@ body { margin: 0; padding: 0; }
     </div>
     <div class="staff-add display-none" id="staffadd">
         <div class="display-flex-space-between">
-            <span class="slogan"><span class=>TED</span> <br> <span class="slogan">for <br> staff</span></span>
+            <span class="slogan"><span class="slogan heavy">TED</span> <br> <span class="slogan">for <br> staff</span></span>
             <span class="material-symbols-sharp" onclick="showHideElement('staffadd')">
             close
             </span>

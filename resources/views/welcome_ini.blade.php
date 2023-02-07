@@ -18,7 +18,7 @@
         <div>
             @include("components.app_name")
             <div class="breaker"></div>
-            <span class="slogan">Leading <br> transportation <br> service <br> in <br> Giyani</span>
+            <span class="slogan">Leading <br> transportation <br> service</span>
         </div>
     </div>
     <div class="home-design-right"></div>
