@@ -9,6 +9,7 @@
     <script src="{{ $links['mobileJs'] }}"></script>
     <title>Ted</title>
 </head>
+
 <body>
     <div class="home-design-top"></div>
     <div class="home-design-left"></div>

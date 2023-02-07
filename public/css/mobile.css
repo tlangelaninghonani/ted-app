@@ -5,8 +5,8 @@
 }
 
 @font-face {
-    font-family: 'Helvetica-heavy';
-    src: url('/HelveticaNeueLTPro-HvEx.woff2') format('WOFF2');
+    font-family: 'Helvetica-bold';
+    src: url('/HelveticaNeueLTPro-BdEx.woff2') format('WOFF2');
 }
 
 
@@ -146,7 +146,7 @@ img{
 }
 
 .heavy{
-    font-family: "Helvetica-heavy";
+    font-family: "Helvetica-bold";
 }
 
 .slogan{
@@ -448,7 +448,7 @@ button{
 
 button *{
     color: white !important;
-    font-family: "Helvetica-heavy";
+    
 }
 
 .button-width-auto{

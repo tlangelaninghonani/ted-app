@@ -98,7 +98,7 @@ body { margin: 0; padding: 0; }
         </div>
     </div>
     <div class="map-bottom-content">
-        <div id="waitingforcoords" class="display-none">
+        <div id="waitingforcoords">
             <div class="display-flex-space-between">
                 <div>
                     <span class="text-mid">Searching for your live location</span><br>
@@ -133,7 +133,7 @@ body { margin: 0; padding: 0; }
                 </div>
             </div>
         </div>
-        <div id="waitingforride">
+        <div id="waitingforride" class="display-none">
             <div class="display-flex-space-between">
                 <span class="slogan">Your <br> ride <br> is on <br> the  way</span> 
                 <div class="display-flex-align mid-gap">
@@ -153,7 +153,8 @@ body { margin: 0; padding: 0; }
                 <div class="display-flex-space-between w-100">
                     <div>
                         <span>Simphiwe Mafoko</span><br>
-                        <span class="text-small">Nissan Magnus</span>
+                        <span class="text-small">Nissan Magnus</span><br>
+                        <span class="text-small">DFS 654 L</span>
                     </div>
                     <button class="button-width-auto">
                         <span class="my-font-align ">Call driver</span>
@@ -171,7 +172,7 @@ body { margin: 0; padding: 0; }
     </div>
     <div class="staff-add display-none" id="staffadd">
         <div class="display-flex-space-between">
-            <span class="slogan"><span class="slogan heavy">TED</span> <br> <span class="slogan">for <br> staff</span></span>
+            <span class="slogan"><span class=>TED</span> <br> <span class="slogan">for <br> staff</span></span>
             <span class="material-symbols-sharp" onclick="showHideElement('staffadd')">
             close
             </span>
@@ -211,6 +212,7 @@ body { margin: 0; padding: 0; }
 
         var lng = 0;
         var lat = 0;
+        var start = [];
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -224,6 +226,8 @@ body { margin: 0; padding: 0; }
             lat = position.coords.latitude;
 
             addMarkers(); 
+            start = [lng, lat];
+            //getRoute([18.423300, -33.918861]);
         }
 
         getLocation();
@@ -271,7 +275,7 @@ body { margin: 0; padding: 0; }
                             type: 'Feature',
                             geometry: {
                                 type: 'Point',
-                                coordinates: [parseInt(lng) - 2, parseInt(lat) - 2]
+                                coordinates: [18.423300, -33.918861]
                             }
                         }
                     ]
@@ -296,18 +300,98 @@ body { margin: 0; padding: 0; }
                 //new mapboxgl.Marker(driverLocation).setLngLat(geojson.features[1].geometry.coordinates).addTo(map);
 
                 map.flyTo({
-                center: geojson.features[0].geometry.coordinates,
-                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+                    center: geojson.features[0].geometry.coordinates,
+                    essential: true // this animation is considered essential with respect to prefers-reduced-motion
                 });
 
                 if(lng !== 0 && lat !== 0){
 
-                // document.querySelector("#waitingforcoords").style.display = "none";
-                // document.querySelector("#coordsreceived").style.display = "block";
+                document.querySelector("#waitingforcoords").style.display = "none";
+                document.querySelector("#coordsreceived").style.display = "block";
                 }
             }, 5000);
            
         }
+
+        // create a function to make a directions request
+        async function getRoute(end) {
+            // make a directions request using cycling profile
+            // an arbitrary start will always be the same
+            // only the end or destination will change
+            const query = await fetch(
+                `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                { method: 'GET' }
+            );
+            const json = await query.json();
+            const data = json.routes[0];
+            const route = data.geometry.coordinates;
+            const geojson = {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                type: 'LineString',
+                coordinates: route
+                }
+            };
+            // if the route already exists on the map, we'll reset it using setData
+            if (map.getSource('route')) {
+                map.getSource('route').setData(geojson);
+            }
+            // otherwise, we'll make a new request
+            else {
+                map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: {
+                    type: 'geojson',
+                    data: geojson
+                },
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                paint: {
+                    'line-color': '#E50914',
+                    'line-width': 4,
+                    'line-opacity': 0.9
+                }
+                });
+            }
+            // add turn instructions here at the end
+            }
+
+            map.on('load', () => {
+            // make an initial directions request that
+            // starts and ends at the same location
+            getRoute(start);
+
+            // Add starting point to the map
+            map.addLayer({
+                id: 'point',
+                type: 'circle',
+                source: {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: [
+                    {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                        type: 'Point',
+                        coordinates: start
+                        }
+                    }
+                    ]
+                }
+                },
+                paint: {
+                'circle-radius': 10,
+                'circle-color': '#3887be'
+                }
+            });
+            // this is where the code from the next step will go
+        });
 
     
         //showHidePlaceHolder(document.querySelector("#locaton"), 'locatonplaceholder', 'locatoncontain');
